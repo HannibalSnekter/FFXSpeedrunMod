@@ -44,10 +44,10 @@ internal sealed class CsrConfigBinder : BinderBase<CsrConfig>
         var csr_config = new CsrConfig {};
 
         csr_config.CsrOn = bindingContext.ParseResult.GetValueForOption(_optCsrOn) ?? ResolveMandatoryBoolArg(_optCsrOn);
-        csr_config.CsrBreakOn = csr_config.CsrOn && ResolveMandatoryBoolArg(_optCsrBreakOn);
+        csr_config.CsrBreakOn = csr_config.CsrOn && (bindingContext.ParseResult.GetValueForOption(_optCsrBreakOn) ?? ResolveMandatoryBoolArg(_optCsrBreakOn));
 
         csr_config.TrueRngOn = bindingContext.ParseResult.GetValueForOption(_optTrueRngOn) ?? ResolveMandatoryBoolArg(_optTrueRngOn);
-        csr_config.SetSeedOn = !csr_config.TrueRngOn && ResolveMandatoryBoolArg(_optSetSeedOn);
+        csr_config.SetSeedOn = !csr_config.TrueRngOn && (bindingContext.ParseResult.GetValueForOption(_optSetSeedOn) ?? ResolveMandatoryBoolArg(_optSetSeedOn));
 
         csr_config.MtSleepInterval = bindingContext.ParseResult.GetValueForOption(_optMtSleepInterval) ?? 16;
 
