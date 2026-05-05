@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FFXCutsceneRemover.Logging;
+using FFXCutsceneRemover.Resources;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Binding;
@@ -7,8 +9,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-
-using FFXCutsceneRemover.Logging;
 
 namespace FFXCutsceneRemover;
 
@@ -70,12 +70,14 @@ public class Program
     private static CutsceneRemover cutsceneRemover = null;
     private static RNGMod rngMod = null;
 
+    private static bool csrIsClean = false;
+
     private static Process Game = null;
 
     private static bool newGameSetUp = false;
     private static List<byte> newGameIndents = new List<byte>(8);
 
-    private static readonly BreakTransition BreakTransition = new BreakTransition { ForceLoad = false, Description = "Break Setup", ConsoleOutput = false, Suspendable = false, Repeatable = true };
+    private static BreakTransition BreakTransition;
 	
     private static bool seedInjected = false;
     private static uint seedSubmitted;
@@ -395,10 +397,7 @@ public class Program
             MemoryWatchers.Initialize(Game);
             MemoryWatchers.Watchers.UpdateAll(Game);
 
-            newGameIndents = GetNewGameIndents();
-
-            cutsceneRemover = StartCSR();
-            rngMod = StartTrueRNG();
+            Initialise();
 
             DiagnosticLog.Information("Starting main loop!");
 
@@ -406,16 +405,21 @@ public class Program
             {
                 MemoryWatchers.Watchers.UpdateAll(Game);
 
+                /* If we end up on the main menu (room 23) then reset anything that needs resetting if skips have previously been performed */
+                if (MemoryWatchers.RoomNumber.Current == 23 && !csrIsClean)
+                {
+                    MainMenuReset();
+                    csrIsClean = true;
+                }
+                else if (csrIsClean && MemoryWatchers.RoomNumber.Current != 23)
+                {
+                    csrIsClean = false;
+                }
+
                 /* If New Game setup hasn't been executed and we're on the soundtrack selection dialogue box then run new game setup */
                 if (!newGameSetUp && MemoryWatchers.RoomNumber.Current == 0 && MemoryWatchers.Storyline.Current == 0 && MemoryWatchers.Dialogue1.Current == 6)
                 {
                     NewGameSetup();
-                }
-
-                /* If we end up on the main menu (room 23) then reset anything that needs resetting upon a game over */
-                if (MemoryWatchers.RoomNumber.Current == 23)
-                {
-                    GameOverReset();
                 }
 
                 /* If CSR is on then run the appropriate logic */
@@ -520,9 +524,16 @@ public class Program
         newGameSetUp = true;
     }
 
-    private static void GameOverReset()
+    private static void MainMenuReset()
     {
-        newGameSetUp = false;
+        Initialise();
+        
+        foreach (var transition in Transitions.StandardTransitions)
+        {
+            transition.Value.Stage = 0;
+        }
+        
+        DiagnosticLog.Information("Main Menu Reset");
     }
 
     private static void CSRBreak()
@@ -650,5 +661,14 @@ public class Program
         }
 
         return Game;
+    }
+
+    private static void Initialise()
+    {
+        cutsceneRemover = StartCSR();
+        rngMod = StartTrueRNG();
+        newGameIndents = GetNewGameIndents();
+        newGameSetUp = false;
+        BreakTransition = new BreakTransition { ForceLoad = false, Description = "Break Setup", ConsoleOutput = false, Suspendable = false, Repeatable = true };
     }
 }
