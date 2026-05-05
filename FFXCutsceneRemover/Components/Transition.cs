@@ -6,6 +6,7 @@ using System.Linq;
 using FFXCutsceneRemover.ComponentUtil;
 using FFXCutsceneRemover.Logging;
 using FFXCutsceneRemover.Resources;
+using Serilog.Events;
 
 namespace FFXCutsceneRemover;
 
@@ -342,7 +343,7 @@ public class Transition
         WriteValue(MemoryWatchers.TidusYCoordinate, TidusYCoordinate);
         WriteValue(MemoryWatchers.TidusZCoordinate, TidusZCoordinate);
         WriteValue(MemoryWatchers.TidusRotation, TidusRotation);
-        WriteBytes(MemoryWatchers.DialogueFile, DialogueFile);
+        WriteBytes(MemoryWatchers.DialogueFile, DialogueFile, false); // Don't write to debug log due to size of outputs
         WriteValue(MemoryWatchers.CutsceneTiming, CutsceneTiming);
         WriteValue(MemoryWatchers.IsLoading, IsLoading);
         WriteValue(MemoryWatchers.CurrentMagicID, CurrentMagicID);
@@ -617,7 +618,7 @@ public class Transition
         MemoryWatchers.ForceLoad.Update(process);
     }
 
-    protected void WriteValue<T>(MemoryWatcher watcher, T? value) where T : struct
+    protected void WriteValue<T>(MemoryWatcher watcher, T? value, bool writeToLog = true) where T : struct
     {
         if (value.HasValue)
         {
@@ -625,7 +626,10 @@ public class Transition
 
             if (watcher.AddrType == MemoryWatcher.AddressType.Absolute)
             {
-                DiagnosticLog.Debug($"w {watcher.Name}: write {value.Value} to addr {dbgAddr:X8}.");
+                if (writeToLog)
+                {
+                    DiagnosticLog.Debug($"w {watcher.Name}: write {value.Value} to addr {dbgAddr:X8}.");
+                }
                 process.WriteValue(watcher.Address, value.Value);
                 return;
             }
@@ -638,13 +642,16 @@ public class Transition
                     DiagnosticLog.Information("Couldn't read the pointer path for: " + watcher.Name);
                 }
 
-                DiagnosticLog.Debug($"w {watcher.Name}: write {value.Value} to addr {finalPointer:X8}.");
+                if (writeToLog)
+                {
+                    DiagnosticLog.Debug($"w {watcher.Name}: write {value.Value} to addr {finalPointer:X8}.");
+                }
                 process.WriteValue(finalPointer, value.Value);
             }
         }
     }
 
-    protected void WriteBytes(MemoryWatcher watcher, byte[] bytes)
+    protected void WriteBytes(MemoryWatcher watcher, byte[] bytes, bool writeToLog = true)
     {
         if (bytes != null)
         {
@@ -653,7 +660,10 @@ public class Transition
 
             if (watcher.AddrType == MemoryWatcher.AddressType.Absolute)
             {
-                DiagnosticLog.Debug($"w {watcher.Name}: write {hexstring} to addr {dbgAddr:X8}.");
+                if (writeToLog)
+                {
+                    DiagnosticLog.Debug($"w {watcher.Name}: write {hexstring} to addr {dbgAddr:X8}.");
+                }
                 process.WriteBytes(watcher.Address, bytes);
                 return;
             }
@@ -666,7 +676,10 @@ public class Transition
                     DiagnosticLog.Information("Couldn't read the pointer path for: " + watcher.Name);
                 }
 
-                DiagnosticLog.Debug($"w {watcher.Name}: write {hexstring} to addr {finalPointer:X8}.");
+                if (writeToLog)
+                {
+                    DiagnosticLog.Debug($"w {watcher.Name}: write {hexstring} to addr {finalPointer:X8}.");
+                }
                 process.WriteBytes(finalPointer, bytes);
             }
         }
