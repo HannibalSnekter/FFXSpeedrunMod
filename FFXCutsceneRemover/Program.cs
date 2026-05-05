@@ -79,7 +79,6 @@ public class Program
 
     private static BreakTransition BreakTransition;
 	
-    private static bool seedInjected = false;
     private static uint seedSubmitted;
     private static uint[] PCSeeds = new uint[] {
         2804382593,
@@ -502,7 +501,6 @@ public class Program
         {
             DiagnosticLog.Information($"Injecting Seed {seedSubmitted}");
             new Transition { ForceLoad = false, SetSeed = true, SetSeedValue = unchecked((int)seedSubmitted), RoomNumberAlt = (short)(Array.IndexOf(PCSeeds, seedSubmitted) + 1) }.Execute();
-            seedInjected = true;
         }
 
         MemoryWatchers.Watchers.UpdateAll(Game);
