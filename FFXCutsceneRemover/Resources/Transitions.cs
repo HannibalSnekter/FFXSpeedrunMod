@@ -386,6 +386,9 @@ static class Transitions
         {
             () => { return MemoryWatchers.RoomNumber.Current == 108 && MemoryWatchers.Storyline.Current == 2875; },
             new Transition { RoomNumber = 108, Storyline = 340, SpawnPoint = 0, Description = "Trials Entry" } },
+        {
+            () => { return MemoryWatchers.RoomNumber.Current == 96 && MemoryWatchers.Storyline.Current == 2875 && MemoryWatchers.AirshipDestinations.Current == 0; },
+            new Transition { RoomNumber = 96, Storyline = 335, SpawnPoint = 1, Description = "Fled From Trials" } },
         //{
         //    () => { return MemoryWatchers.RoomNumber.Current == 44 && MemoryWatchers.Storyline.Current == 335; },
         //    KilikaElevatorTransition },
