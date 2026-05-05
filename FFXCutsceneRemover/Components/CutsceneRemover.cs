@@ -40,15 +40,6 @@ class CutsceneRemover
             }
         }
 
-        // Reset multi-stage transitions when on the main menu
-        if (MemoryWatchers.RoomNumber.Current == 23)
-        {
-            foreach (var transition in standardTransitions)
-            {
-                transition.Value.Stage = 0;
-            }
-        }
-
         /* Loop for post boss fights transitions. Once we enter the fight we set the boss bit and the transition
             * to perform once we exit the AP menu. */
         Dictionary<Func<bool>, Transition> postBossBattleTransitions = Transitions.PostBossBattleTransitions;
@@ -64,12 +55,6 @@ class CutsceneRemover
                     DiagnosticLog.Information("Entered Boss Fight: " + transition.Value.Description);
                 }
             }
-        }
-        else if (InBossFight && MemoryWatchers.RoomNumber.Current == 23)
-        {
-            DiagnosticLog.Information("Main menu detected. Exiting boss loop (This means you died or soft-reset)");
-            new Transition { EncounterMapID = 0, EncounterFormationID1 = 0, EncounterFormationID2 = 0, Description = "Clear boss battle memory" }.Execute();
-            InBossFight = false;
         }
         else if (MemoryWatchers.Menu.Current == 0 && MemoryWatchers.Menu.Old == 1)
         {
