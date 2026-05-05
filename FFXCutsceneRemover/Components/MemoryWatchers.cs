@@ -326,7 +326,11 @@ public static class MemoryWatchers
             {
                 DiagnosticLog.Information("Exception: " + e.Message);
             }
-        }
+            catch (Exception e)
+            {
+                DiagnosticLog.Information("Exception: " + e.Message);
+            }
+    }
 
         DiagnosticLog.Information($"Process base address: {processBaseAddress:X8}");
 
