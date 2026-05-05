@@ -368,9 +368,9 @@ static class Transitions
         {
             () => { return MemoryWatchers.RoomNumber.Current == 65 && MemoryWatchers.Storyline.Current == 322; },
             new GeneauxTransition { ForceLoad = false, Description = "Pre-Geneaux", Suspendable = false, Repeatable = true} },
-        {
-            () => { return MemoryWatchers.RoomNumber.Current == 65 && MemoryWatchers.Storyline.Current == 326 && MemoryWatchers.State.Current == 1; },
-            new Transition { RoomNumber = 78, Storyline = 328, SpawnPoint = 1, Description = "No replacement for Chappu"} },
+        //{
+        //    () => { return MemoryWatchers.RoomNumber.Current == 65 && MemoryWatchers.Storyline.Current == 326 && MemoryWatchers.State.Current == 1; },
+        //    new Transition { RoomNumber = 78, Storyline = 328, SpawnPoint = 1, Description = "No replacement for Chappu"} },
         {
             () => { return MemoryWatchers.RoomNumber.Current == 78 && MemoryWatchers.Storyline.Current == 328; },
             new Transition { RoomNumber = 78, Storyline = 330, SpawnPoint = 1, PositionTidusAfterLoad = true, Target_x = -0.361f, Target_y = 5.801f, Target_z = -91.049f, Target_rot = 1.558f, Target_var1 = 287, Description = "Arrival at temple"} },
@@ -1091,7 +1091,7 @@ static class Transitions
         //    new Transition { RoomNumber = 68, Storyline = 184, Description = "Tidus joins the Aurochs"} },
         { 
             () => { return MemoryWatchers.EncounterMapID.Current == 11 && MemoryWatchers.EncounterFormationID2.Current == 0 && MemoryWatchers.Storyline.Current == 322; }, 
-            new Transition { SpawnPoint = 1, Storyline = 326, PositionTidusAfterLoad = true, Target_x = -11.760f, Target_y = -159.978f, Target_z = 541.001f, Target_rot = 1.698f, Target_var1 = 88, MoveFrame = 5, Description = "Geneaux"} },
+            new Transition { SpawnPoint = 1, Storyline = 328, PositionTidusAfterLoad = true, Target_x = -11.760f, Target_y = -159.978f, Target_z = 541.001f, Target_rot = 1.698f, Target_var1 = 88, MoveFrame = 5, Description = "Geneaux"} },
         { 
             () => { return MemoryWatchers.RoomNumber.Current == 45 && MemoryWatchers.Storyline.Current == 346 && MemoryWatchers.State.Current == 1; }, 
             new Transition { RoomNumber = 78, Storyline = 348, SpawnPoint = 0, EnableIfrit = 17, Description = "Ifrit"} },
