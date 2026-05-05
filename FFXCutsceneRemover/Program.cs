@@ -73,6 +73,7 @@ public class Program
     private static Process Game = null;
 
     private static bool newGameSetUp = false;
+    private static List<byte> newGameIndents = new List<byte>(8);
 
     private static readonly BreakTransition BreakTransition = new BreakTransition { ForceLoad = false, Description = "Break Setup", ConsoleOutput = false, Suspendable = false, Repeatable = true };
 	
@@ -394,73 +395,10 @@ public class Program
             MemoryWatchers.Initialize(Game);
             MemoryWatchers.Watchers.UpdateAll(Game);
 
-            List<byte> startGameIndents = new List<byte> (8);
+            newGameIndents = GetNewGameIndents();
 
-            byte language = MemoryWatchers.Language.Current;
-
-            switch (language)
-            {
-                case 0x00: // Japanese
-                    startGameIndents = new List<byte>() {
-                        0x43,
-                        0x00,
-                        0x47,
-                        0x43,
-                        0x4b,
-                        csrConfig.SetSeedOn ? (byte)0x48 : (byte)0x4b,
-                        0x00,
-                        0x4e
-                    };
-                    break;
-                case 0x09: // Korean
-                    startGameIndents = new List<byte>() {
-                        0x43,
-                        0x00,
-                        0x46,
-                        0x43,
-                        0x4a,
-                        csrConfig.SetSeedOn ? (byte)0x48 : (byte)0x4a,
-                        0x00,
-                        0x4d
-                    };
-                    break;
-                case 0x0A: // Chinese
-                    startGameIndents = new List<byte>() {
-                        0x43,
-                        0x00,
-                        0x46,
-                        0x43,
-                        0x4a,
-                        csrConfig.SetSeedOn ? (byte)0x46 : (byte)0x4a,
-                        0x00,
-                        0x4d
-                    };
-                    break;
-                default:
-                    startGameIndents = new List<byte>() {
-                        0x43,
-                        0x00,
-                        0x45,
-                        0x41,
-                        0x4a,
-                        csrConfig.SetSeedOn ? (byte)0x47 : (byte)0x4a,
-                        0x00,
-                        0x4d
-                    };
-                    break;
-            }
-
-            if (csrConfig.CsrOn)
-            {
-                cutsceneRemover = new CutsceneRemover(csrConfig.MtSleepInterval);
-                cutsceneRemover.Game = Game;
-            }
-
-            if (csrConfig.TrueRngOn)
-            {
-                rngMod = new RNGMod();
-                rngMod.Game = Game;
-            }
+            cutsceneRemover = StartCSR();
+            rngMod = StartTrueRNG();
 
             DiagnosticLog.Information("Starting main loop!");
 
@@ -468,69 +406,34 @@ public class Program
             {
                 MemoryWatchers.Watchers.UpdateAll(Game);
 
+                /* If New Game setup hasn't been executed and we're on the soundtrack selection dialogue box then run new game setup */
                 if (!newGameSetUp && MemoryWatchers.RoomNumber.Current == 0 && MemoryWatchers.Storyline.Current == 0 && MemoryWatchers.Dialogue1.Current == 6)
                 {
-                    if (csrConfig.SetSeedOn)
-                    {
-                        DiagnosticLog.Information($"Injecting Seed {seedSubmitted}");
-                        new Transition { ForceLoad = false, SetSeed = true, SetSeedValue = unchecked((int)seedSubmitted), RoomNumberAlt = (short)(Array.IndexOf(PCSeeds, seedSubmitted) + 1) }.Execute();
-                        seedInjected = true;
-                    }
-
-                    MemoryWatchers.Watchers.UpdateAll(Game);
-
-                    startGameText = new List<(string, byte)>
-                    {
-                        ($"[FFX Speedrunning Mod v{majorID}.{minorID}.{patchID}]", startGameIndents[0]),
-                        ($"", startGameIndents[1]),
-                        ($"Cutscene Remover: {(csrConfig.CsrOn ? "Enabled" : "Disabled")}", startGameIndents[2]),
-                        ($"Cutscene Remover Break: {(csrConfig.CsrBreakOn ? "Enabled" : "Disabled")}", startGameIndents[3]),
-                        ($"True RNG: {(csrConfig.TrueRngOn ? "Enabled" : "Disabled")}", startGameIndents[4]),
-                        ($"Set Seed: {(MemoryWatchers.RoomNumberAlt.Current != 0 ? PCSeeds[MemoryWatchers.RoomNumberAlt.Current - 1] : "Disabled")}", startGameIndents[5]),
-                        ($"", startGameIndents[6]),
-                        ($"Start Game?", startGameIndents[7])
-                    };
-
-                    new NewGameTransition { ForceLoad = false, ConsoleOutput = false, startGameText = startGameText }.Execute();
-
-                    newGameSetUp = true;
-                }
-                if (newGameSetUp && MemoryWatchers.RoomNumber.Current == 23)
-                {
-                    newGameSetUp = false;
+                    NewGameSetup();
                 }
 
-                if (csrConfig.CsrBreakOn && MemoryWatchers.ForceLoad.Current == 0)
+                /* If we end up on the main menu (room 23) then reset anything that needs resetting upon a game over */
+                if (MemoryWatchers.RoomNumber.Current == 23)
                 {
-                    if (MemoryWatchers.RoomNumber.Current == 140 && MemoryWatchers.Storyline.Current == 1300)
-                    {
-                        new Transition { RoomNumber = 184, SpawnPoint = 0, Description = "Break" }.Execute();
-                    }
-                    else if (MemoryWatchers.RoomNumber.Current == 184 && MemoryWatchers.Storyline.Current == 1300)
-                    {
-                        BreakTransition.Execute();
-                    }
-                    else if (MemoryWatchers.RoomNumber.Current == 158 && MemoryWatchers.Storyline.Current == 1300)
-                    {
-                        new Transition { RoomNumber = 140, Storyline = 1310, SpawnPoint = 0, Description = "End of Break + Map + Rikku afraid + tutorial" }.Execute();
-                    }
+                    GameOverReset();
                 }
-                else
-                {
-                    if (MemoryWatchers.RoomNumber.Current == 140 && MemoryWatchers.Storyline.Current == 1300)
-                    {
-                        new Transition { RoomNumber = 140, Storyline = 1310, SpawnPoint = 0, Description = "End of Break + Map + Rikku afraid + tutorial" }.Execute();
-                    }
-				}
 
+                /* If CSR is on then run the appropriate logic */
                 if (csrConfig.CsrOn)
                 {
-                    cutsceneRemover.MainLoop();
+                    RunCSR();
                 }
 
+                /* If CSR break is on then run the appropriate logic */
+                if (csrConfig.CsrBreakOn)
+                {
+                    CSRBreak();
+                }
+
+                /* If TrueRNG is on then run the appropriate logic */
                 if (csrConfig.TrueRngOn)
                 {
-                    rngMod.MainLoop();
+                    RunTrueRNG();
                 }
 
                 // Sleep for a bit so we don't destroy CPUs
@@ -550,6 +453,149 @@ public class Program
         }
 
         return isRunning;
+    }
+
+    private static CutsceneRemover StartCSR()
+    {
+        if (csrConfig.CsrOn)
+        {
+            cutsceneRemover = new CutsceneRemover(csrConfig.MtSleepInterval);
+            cutsceneRemover.Game = Game;
+        }
+
+        return cutsceneRemover;
+    }
+
+    private static RNGMod StartTrueRNG()
+    {
+        if (csrConfig.TrueRngOn)
+        {
+            rngMod = new RNGMod();
+            rngMod.Game = Game;
+        }
+
+        return rngMod;
+    }
+
+    private static void RunCSR()
+    {
+        cutsceneRemover.MainLoop();
+    }
+
+    private static void RunTrueRNG()
+    {
+        rngMod.MainLoop();
+    }
+
+    private static void NewGameSetup()
+    {
+        /*
+            If Set Seed is on then set the seed. RoomNumberAlt is normally 0 here and is set to the seed index value + 1 (i.e. from 1 to 256).
+            This is then used in creating the start game text to add the seed ID to the text. Storing in this benign section of memory allows us
+            to store injected seed information across a reboot of the mod executable.
+        */
+        if (csrConfig.SetSeedOn)
+        {
+            DiagnosticLog.Information($"Injecting Seed {seedSubmitted}");
+            new Transition { ForceLoad = false, SetSeed = true, SetSeedValue = unchecked((int)seedSubmitted), RoomNumberAlt = (short)(Array.IndexOf(PCSeeds, seedSubmitted) + 1) }.Execute();
+            seedInjected = true;
+        }
+
+        MemoryWatchers.Watchers.UpdateAll(Game);
+
+        startGameText = new List<(string, byte)>
+                {
+                    ($"[FFX Speedrunning Mod v{majorID}.{minorID}.{patchID}]", newGameIndents[0]),
+                    ($"", newGameIndents[1]),
+                    ($"Cutscene Remover: {(csrConfig.CsrOn ? "Enabled" : "Disabled")}", newGameIndents[2]),
+                    ($"Cutscene Remover Break: {(csrConfig.CsrBreakOn ? "Enabled" : "Disabled")}", newGameIndents[3]),
+                    ($"True RNG: {(csrConfig.TrueRngOn ? "Enabled" : "Disabled")}", newGameIndents[4]),
+                    ($"Set Seed: {(MemoryWatchers.RoomNumberAlt.Current != 0 ? PCSeeds[MemoryWatchers.RoomNumberAlt.Current - 1] : "Disabled")}", newGameIndents[5]),
+                    ($"", newGameIndents[6]),
+                    ($"Start Game?", newGameIndents[7])
+                };
+
+        new NewGameTransition { ForceLoad = false, ConsoleOutput = false, startGameText = startGameText }.Execute();
+
+        newGameSetUp = true;
+    }
+
+    private static void GameOverReset()
+    {
+        newGameSetUp = false;
+    }
+
+    private static void CSRBreak()
+    {
+
+        if (MemoryWatchers.ForceLoad.Current == 0)
+        {
+            if (MemoryWatchers.RoomNumber.Current == 140 && MemoryWatchers.Storyline.Current == 1300)
+            {
+                new Transition { RoomNumber = 184, SpawnPoint = 0, Description = "Break" }.Execute();
+            }
+            else if (MemoryWatchers.RoomNumber.Current == 184 && MemoryWatchers.Storyline.Current == 1300)
+            {
+                BreakTransition.Execute();
+            }
+            else if (MemoryWatchers.RoomNumber.Current == 158 && MemoryWatchers.Storyline.Current == 1300)
+            {
+                new Transition { RoomNumber = 140, Storyline = 1310, SpawnPoint = 0, Description = "End of Break + Map + Rikku afraid + tutorial" }.Execute();
+            }
+        }
+    }
+
+    private static List<byte> GetNewGameIndents()
+    {
+        byte language = MemoryWatchers.Language.Current;
+
+        switch (language)
+        {
+            case 0x00: // Japanese
+                return new List<byte>() {
+                        0x43,
+                        0x00,
+                        0x47,
+                        0x43,
+                        0x4b,
+                        csrConfig.SetSeedOn ? (byte)0x48 : (byte)0x4b,
+                        0x00,
+                        0x4e
+                    };
+            case 0x09: // Korean
+                return new List<byte>() {
+                        0x43,
+                        0x00,
+                        0x46,
+                        0x43,
+                        0x4a,
+                        csrConfig.SetSeedOn ? (byte)0x48 : (byte)0x4a,
+                        0x00,
+                        0x4d
+                    };
+            case 0x0A: // Chinese
+                return new List<byte>() {
+                        0x43,
+                        0x00,
+                        0x46,
+                        0x43,
+                        0x4a,
+                        csrConfig.SetSeedOn ? (byte)0x46 : (byte)0x4a,
+                        0x00,
+                        0x4d
+                    };
+            default:
+                return new List<byte>() {
+                        0x43,
+                        0x00,
+                        0x45,
+                        0x41,
+                        0x4a,
+                        csrConfig.SetSeedOn ? (byte)0x47 : (byte)0x4a,
+                        0x00,
+                        0x4d
+                    };
+        }
     }
 
     private static void SetSeed()
