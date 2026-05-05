@@ -532,8 +532,6 @@ public class Program
         {
             transition.Value.Stage = 0;
         }
-        
-        DiagnosticLog.Information("Main Menu Reset");
     }
 
     private static void CSRBreak()

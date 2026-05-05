@@ -41,7 +41,6 @@ class BreakTransition : Transition
     TimeSpan breakTimeRemaining = TimeSpan.Zero;
     TimeSpan breakTimeRemainingPrevious = TimeSpan.Zero;
     TimeSpan breakTimeMaximum = TimeSpan.FromMinutes(5);
-    //TimeSpan breakTimeMaximum = TimeSpan.FromSeconds(40);
     string infoMessageLine1 = "This is the break screen for CSR speedruns. When the countdown timer runs";
     string infoMessageLine2 = "out you will be loaded into Thunder Plains and the livesplit timer will continue.";
     string infoMessageLine3 = "You can end your break early by selecting ";
