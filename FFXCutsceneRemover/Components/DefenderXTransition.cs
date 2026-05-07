@@ -8,18 +8,25 @@ class DefenderXTransition : Transition
     {
         int baseAddress = MemoryWatchers.GetBaseAddress();
 
-        if (Stage == 0 && MemoryWatchers.FrameCounterFromLoad.Current < 10)
+        if (MemoryWatchers.RoomNumber.Current == 279)
         {
-            base.Execute();
+            if (Stage == 0 && MemoryWatchers.MovementLock.Current == 0x20)
+            {
+                base.Execute();
 
-            BaseCutsceneValue = MemoryWatchers.EventFileStart.Current;
-            Stage = 1;
+                BaseCutsceneValue = MemoryWatchers.EventFileStart.Current;
+                Stage = 1;
 
+            }
+            else if (MemoryWatchers.DefenderXTransition.Current >= (BaseCutsceneValue + 0x5451) && Stage == 1)
+            {
+                WriteValue<int>(MemoryWatchers.DefenderXTransition, BaseCutsceneValue + 0x586F);
+                Stage = 2;
+            }
         }
-        else if (MemoryWatchers.DefenderXTransition.Current >= (BaseCutsceneValue + 0x5451) && Stage == 1)
+        else if (MemoryWatchers.RoomNumberAlt.Current == 279)
         {
-            WriteValue<int>(MemoryWatchers.DefenderXTransition, BaseCutsceneValue + 0x586F);
-            Stage = 2;
+            Stage = 0;
         }
     }
 }

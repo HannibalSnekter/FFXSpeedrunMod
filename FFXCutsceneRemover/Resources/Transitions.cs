@@ -177,13 +177,10 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 48 && MemoryWatchers.Storyline.Current == 30; },
             new Transition { RoomNumber = 48, Storyline = 42, SpawnPoint = 1, PositionTidusAfterLoad = true, Target_x = 116.063f, Target_y = -92.497f, Target_z = -448.592f, Target_var1 = 43, Description = "Tidus wakes up"} },
         {
-            () => { return MemoryWatchers.RoomNumber.Current == 48 && MemoryWatchers.Storyline.Current == 42; },
-            new Transition { ForceLoad = false, TargetActorIDs = new short[] { 0x01 }, Target_x = 57.642f, Target_z = -480.248f, Target_var1 = 810, ConsoleOutput = false, Description = "Tidus wakes up - Reposition"} },
+            () => { return MemoryWatchers.RoomNumber.Current == 48 && MemoryWatchers.Storyline.Current == 42 && MemoryWatchers.RoomNumberAlt.Current == 389; },
+            new Transition { ForceLoad = false, RoomNumberAlt = 0, TargetActorIDs = new short[] { 0x01 }, Target_x = 57.642f, Target_z = -480.248f, Target_var1 = 810, ConsoleOutput = true, Description = "Tidus wakes up - Reposition"} },
         {
-            () => { return MemoryWatchers.RoomNumber.Current == 49 && MemoryWatchers.Storyline.Current == 42; },
-            DiveTransition },
-        { 
-            () => { return MemoryWatchers.RoomNumber.Current == 49 && MemoryWatchers.Storyline.Current == 44; },
+            () => { return MemoryWatchers.Storyline.Current == 42 || MemoryWatchers.Storyline.Current == 44; },
             DiveTransition },
         {
             () => { return MemoryWatchers.RoomNumber.Current == 49 && MemoryWatchers.Storyline.Current == 44; },
@@ -305,7 +302,7 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 67 && MemoryWatchers.Storyline.Current == 210; },
             new Transition { RoomNumber = 67, Storyline = 214, SpawnPoint = 3, Description = "Yuna says goodbye to Besaid again"} },
         {
-            () => { return MemoryWatchers.RoomNumber.Current == 21 && MemoryWatchers.Storyline.Current == 214; },
+            () => { return MemoryWatchers.Storyline.Current == 214; },
             new KimahriTransition {ForceLoad = false, Description = "Kimahri", FormationSwitch = Transition.formations.PreKimahri, Suspendable = false, Repeatable = true} },
         {
             () => { return MemoryWatchers.RoomNumber.Current == 21 && MemoryWatchers.Storyline.Current == 216; },
@@ -366,7 +363,7 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 65 && MemoryWatchers.Storyline.Current == 315; },
             new Transition { RoomNumber = 65, Storyline = 322, SpawnPoint = 0, Description = "Race up the stairs"} },
         {
-            () => { return MemoryWatchers.RoomNumber.Current == 65 && MemoryWatchers.Storyline.Current == 322; },
+            () => { return MemoryWatchers.Storyline.Current == 322; },
             new GeneauxTransition { ForceLoad = false, Description = "Pre-Geneaux", Suspendable = false, Repeatable = true} },
         //{
         //    () => { return MemoryWatchers.RoomNumber.Current == 65 && MemoryWatchers.Storyline.Current == 326 && MemoryWatchers.State.Current == 1; },
@@ -583,7 +580,7 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 58 && MemoryWatchers.Storyline.Current == 767 && MemoryWatchers.MiihenFlag3.Current == 0; },
             new Transition { MiihenFlag3 = 1 , ForceLoad = false, PositionTidusAfterLoad = true, Target_x = 0.137f, Target_y = 0.0f, Target_z = -227.553f, Target_rot = -2.772f, Target_var1 = 195, Description = "To the chocobo corral"} },
         {
-            () => { return MemoryWatchers.RoomNumber.Current == 58 && MemoryWatchers.Storyline.Current == 767 && MemoryWatchers.MiihenFlag3.Current == 1; },
+            () => { return MemoryWatchers.Storyline.Current == 767 && MemoryWatchers.MiihenFlag3.Current == 1; },
             new ChocoboEaterTransition {ForceLoad = false, Description = "Chocobo Eater", Suspendable = false, Repeatable = true} },
         {
             () => { return MemoryWatchers.RoomNumber.Current == 58 && MemoryWatchers.Storyline.Current == 770 && MemoryWatchers.MiihenFlag3.Current == 3; },
@@ -827,16 +824,10 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 221 && MemoryWatchers.Storyline.Current == 1413; }, 
             new Transition { RoomNumber = 221, Storyline = 1420, SpawnPoint = 0, Description = "Pre-Spherimorph Auron Smash"} },
         { 
-            () => { return MemoryWatchers.RoomNumber.Current == 248 && MemoryWatchers.Storyline.Current == 1420; }, 
+            () => { return MemoryWatchers.Storyline.Current == 1420; }, 
             new SpherimorphTransition {ForceLoad = false , Description = "Spherimorph", Suspendable = false, Repeatable = true} },
         { 
-            () => { return MemoryWatchers.RoomNumber.Current == 164 && MemoryWatchers.Storyline.Current == 1470; },
-            TromellTransition },
-        {
-            () => { return MemoryWatchers.RoomNumber.Current == 221 && MemoryWatchers.Storyline.Current == 1470; },
-            TromellTransition },
-        {
-            () => { return MemoryWatchers.RoomNumber.Current == 215 && MemoryWatchers.Storyline.Current == 1470; },
+            () => { return MemoryWatchers.Storyline.Current == 1470; },
             TromellTransition },
         { 
             () => { return MemoryWatchers.RoomNumber.Current == 102 && MemoryWatchers.Storyline.Current == 1485; }, 
@@ -872,7 +863,7 @@ static class Transitions
             
             // START OF BIKANEL
         { 
-            () => { return MemoryWatchers.RoomNumber.Current == 136 && MemoryWatchers.Storyline.Current == 1715; },
+            () => { return MemoryWatchers.Storyline.Current == 1715; },
             BikanelTransition },
         { 
             () => { return MemoryWatchers.RoomNumber.Current == 136 && MemoryWatchers.Storyline.Current == 1718 && MemoryWatchers.EnableRikku.Current == 0 && MemoryWatchers.State.Current == 1; },
@@ -967,19 +958,19 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 223 && MemoryWatchers.Storyline.Current == 2400 && MemoryWatchers.CutsceneAlt.Current == 885; }, 
             new Transition { SpawnPoint = 0, AddCalmLandsBitmask = 0x08, PositionTidusAfterLoad = true, Target_x = -656.641f, Target_y = 40.625f, Target_z = -122.844f, Target_rot = 1.060f, Target_var1 = 7179, Description = "Father Zuke"} },
         { 
-            () => { return MemoryWatchers.RoomNumber.Current == 279 && MemoryWatchers.Storyline.Current == 2400; },
+            () => { return MemoryWatchers.Storyline.Current == 2400; },
             new DefenderXTransition {ForceLoad = false, Description = "Defender X", Suspendable = false, Repeatable = true} },
         { 
             () => { return MemoryWatchers.RoomNumber.Current == 279 && MemoryWatchers.Storyline.Current == 2420 && MemoryWatchers.MovementLock.Current == 48 && Math.Abs(MemoryWatchers.XCoordinate.Current - 265.377f) < 0.5f; },
             new Transition { RoomNumber = 259, Storyline = 2510, RoomNumberAlt = 266, SpawnPoint = 0, Description = "Yuna reflects"} },
         { 
-            () => { return MemoryWatchers.RoomNumber.Current == 259 && MemoryWatchers.Storyline.Current == 2510; },
+            () => { return MemoryWatchers.Storyline.Current == 2510; },
             new RonsoTransition {ForceLoad = false, Description = "Biran + Yenke", Suspendable = false, Repeatable = true} },
         { 
             () => { return MemoryWatchers.RoomNumber.Current == 244 && MemoryWatchers.Storyline.Current == 2528 && MemoryWatchers.State.Current == 1; },
             new Transition {Storyline = 2530, SpawnPoint = 0, WantzFlag = 1, WantzMacalaniaFlag = 1, PositionTidusAfterLoad = true, Target_x = 13.495f, Target_y = -3.161f, Target_z = 19.213f, Target_rot = 1.570f, Target_var1 = 1243, Description = "Ronso Singing"} },
         { 
-            () => { return MemoryWatchers.RoomNumber.Current == 285 && MemoryWatchers.Storyline.Current == 2530; },
+            () => { return MemoryWatchers.Storyline.Current == 2530; },
             new FluxTransition {ForceLoad = false, Description = "Seymour Flux", Suspendable = false, Repeatable = true} },
         { 
             () => { return MemoryWatchers.RoomNumber.Current == 309 && MemoryWatchers.Storyline.Current == 2560; },
@@ -1061,7 +1052,7 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 202 && MemoryWatchers.Storyline.Current == 3135; }, 
             new OverdriveSinTransition {ForceLoad = false, Description = "Overdrive Sin", Suspendable = false, Repeatable = true} },
         { 
-            () => { return MemoryWatchers.RoomNumber.Current == 296 && MemoryWatchers.Storyline.Current == 3205; }, 
+            () => { return MemoryWatchers.Storyline.Current == 3205; }, 
             new OmnisTransition {ForceLoad = false, Description = "Pre-Omnis", Suspendable = false, Repeatable = true} },
         { 
             () => { return MemoryWatchers.RoomNumber.Current == 327 && MemoryWatchers.Storyline.Current == 3250 && MemoryWatchers.CutsceneAlt.Current == 5889; }, 

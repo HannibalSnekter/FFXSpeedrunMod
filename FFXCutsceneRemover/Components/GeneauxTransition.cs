@@ -14,39 +14,46 @@ class GeneauxTransition : Transition
     {
         Process process = MemoryWatchers.Process;
 
-        if (MemoryWatchers.MovementLock.Current == 0x20 && Stage == 0)
+        if (MemoryWatchers.RoomNumber.Current == 65)
         {
-            base.Execute();
+            if (MemoryWatchers.MovementLock.Current == 0x20 && Stage == 0)
+            {
+                base.Execute();
 
-            BaseCutsceneValue = MemoryWatchers.EventFileStart.Current;
-            Stage = 1;
+                BaseCutsceneValue = MemoryWatchers.EventFileStart.Current;
+                Stage = 1;
 
+            }
+            else if (MemoryWatchers.GeneauxTransition.Current == (BaseCutsceneValue + 0x65CA) && Stage == 1) // 0x65CA
+            {
+                WriteValue<int>(MemoryWatchers.GeneauxTransition, BaseCutsceneValue + 0x67AA);
+
+                formation = process.ReadBytes(MemoryWatchers.Formation.Address, 10);
+
+                Transition actorPositions;
+                //Position Party Member 1
+                actorPositions = new Transition { ForceLoad = false, ConsoleOutput = false, TargetActorIDs = new short[] { (short)(formation[0] + 1) }, Target_x = -6.565f, Target_y = -159.997f, Target_z = 551.024f };
+                actorPositions.Execute();
+
+                //Position Party Member 2
+                actorPositions = new Transition { ForceLoad = false, ConsoleOutput = false, TargetActorIDs = new short[] { (short)(formation[1] + 1) }, Target_x = 31.147f, Target_y = -159.997f, Target_z = 514.762f };
+                actorPositions.Execute();
+
+                //Position Party Member 3
+                actorPositions = new Transition { ForceLoad = false, ConsoleOutput = false, TargetActorIDs = new short[] { (short)(formation[2] + 1) }, Target_x = 43.509f, Target_y = -159.997f, Target_z = 571.721f };
+                actorPositions.Execute();
+
+                Stage += 1;
+            }
+            else if (MemoryWatchers.GeneauxTransition.Current == (BaseCutsceneValue + 0x67F4) && Stage == 2) // 0x68C3 , 0x67E9
+            {
+                WriteValue<int>(MemoryWatchers.GeneauxTransition, BaseCutsceneValue + 0x6A47);
+                Stage += 1;
+            }
         }
-        else if (MemoryWatchers.GeneauxTransition.Current == (BaseCutsceneValue + 0x65CA) && Stage == 1) // 0x65CA
+        else if (MemoryWatchers.RoomNumberAlt.Current == 65)
         {
-            WriteValue<int>(MemoryWatchers.GeneauxTransition, BaseCutsceneValue + 0x67AA);
-
-            formation = process.ReadBytes(MemoryWatchers.Formation.Address, 10);
-
-            Transition actorPositions;
-            //Position Party Member 1
-            actorPositions = new Transition { ForceLoad = false, ConsoleOutput = false, TargetActorIDs = new short[] { (short)(formation[0] + 1)}, Target_x = -6.565f, Target_y = -159.997f, Target_z = 551.024f };
-            actorPositions.Execute();
-
-            //Position Party Member 2
-            actorPositions = new Transition { ForceLoad = false, ConsoleOutput = false, TargetActorIDs = new short[] { (short)(formation[1] + 1) }, Target_x = 31.147f, Target_y = -159.997f, Target_z = 514.762f };
-            actorPositions.Execute();
-
-            //Position Party Member 3
-            actorPositions = new Transition { ForceLoad = false, ConsoleOutput = false, TargetActorIDs = new short[] { (short)(formation[2] + 1) }, Target_x = 43.509f, Target_y = -159.997f, Target_z = 571.721f };
-            actorPositions.Execute();
-                
-            Stage += 1;
-        }
-        else if (MemoryWatchers.GeneauxTransition.Current == (BaseCutsceneValue + 0x67F4) && Stage == 2) // 0x68C3 , 0x67E9
-        {
-            WriteValue<int>(MemoryWatchers.GeneauxTransition, BaseCutsceneValue + 0x6A47);
-            Stage += 1;
+            Stage = 0;
         }
     }
 }

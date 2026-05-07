@@ -12,7 +12,7 @@ class RonsoTransition : Transition
         Process process = MemoryWatchers.Process;
         byte EncountersActive = 0x01;
 
-        if (MemoryWatchers.RonsoTransition.Current > 0)
+        if (MemoryWatchers.RoomNumber.Current == 259)
         {
             if (MemoryWatchers.MovementLock.Current == 0x20 && Stage == 0)
             {
@@ -38,6 +38,10 @@ class RonsoTransition : Transition
 
                 Stage += 1;
             }
+        }
+        else if (MemoryWatchers.RoomNumberAlt.Current == 259)
+        {
+            Stage = 0;
         }
     }
 }

@@ -4,7 +4,7 @@ class SpherimorphTransition : Transition
 {
     public override void Execute(string defaultDescription = "")
     {
-        if (MemoryWatchers.SpherimorphTransition.Current > 0)
+        if (MemoryWatchers.RoomNumber.Current == 248)
         {
             if (MemoryWatchers.CutsceneAlt.Current == 355 && Stage == 0)
             {
@@ -30,6 +30,10 @@ class SpherimorphTransition : Transition
                 WriteValue<int>(MemoryWatchers.SpherimorphTransition, BaseCutsceneValue + 0x36CC);// 1E34
                 Stage += 1;
             }
+        }
+        else if (MemoryWatchers.RoomNumberAlt.Current == 248)
+        {
+            Stage = 0;
         }
     }
 }
