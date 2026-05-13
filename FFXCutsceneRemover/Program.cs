@@ -432,6 +432,13 @@ public class Program
                 {
                     CSRBreak();
                 }
+                else
+                {
+                    if (MemoryWatchers.RoomNumber.Current == 140 && MemoryWatchers.Storyline.Current == 1300)
+                    {
+                        new Transition { RoomNumber = 140, Storyline = 1310, SpawnPoint = 0, Description = "Map + Rikku afraid + tutorial" }.Execute();
+                    }
+                }
 
                 /* If TrueRNG is on then run the appropriate logic */
                 if (csrConfig.TrueRngOn)
