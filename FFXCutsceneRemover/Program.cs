@@ -18,18 +18,21 @@ internal sealed class CsrConfigBinder : BinderBase<CsrConfig>
     private readonly Option<bool?> _optCsrBreakOn;
     private readonly Option<bool?> _optTrueRngOn;
     private readonly Option<bool?> _optSetSeedOn;
+    private readonly Option<uint?> _optSeed;
     private readonly Option<int?> _optMtSleepInterval;
 
     public CsrConfigBinder(Option<bool?> optCsrOn,
                            Option<bool?> optCsrBreakOn,
                            Option<bool?> optTrueRngOn,
                            Option<bool?> optSetSeedOn,
+                           Option<uint?> optSeed,
                            Option<int?> optMtSleepInterval)
     {
         _optCsrOn = optCsrOn;
         _optCsrBreakOn = optCsrBreakOn;
         _optTrueRngOn = optTrueRngOn;
         _optSetSeedOn = optSetSeedOn;
+        _optSeed = optSeed;
         _optMtSleepInterval = optMtSleepInterval;
     }
 
@@ -48,6 +51,7 @@ internal sealed class CsrConfigBinder : BinderBase<CsrConfig>
 
         csr_config.TrueRngOn = bindingContext.ParseResult.GetValueForOption(_optTrueRngOn) ?? ResolveMandatoryBoolArg(_optTrueRngOn);
         csr_config.SetSeedOn = !csr_config.TrueRngOn && (bindingContext.ParseResult.GetValueForOption(_optSetSeedOn) ?? ResolveMandatoryBoolArg(_optSetSeedOn));
+        csr_config.Seed = csr_config.SetSeedOn ? bindingContext.ParseResult.GetValueForOption(_optSeed) : null;
 
         csr_config.MtSleepInterval = bindingContext.ParseResult.GetValueForOption(_optMtSleepInterval) ?? 16;
 
@@ -57,11 +61,12 @@ internal sealed class CsrConfigBinder : BinderBase<CsrConfig>
 
 internal sealed record CsrConfig
 {
-    public bool CsrOn { get; set; }
-    public bool CsrBreakOn { get; set; }
-    public bool TrueRngOn { get; set; }
-    public bool SetSeedOn { get; set; }
-    public int  MtSleepInterval { get; set; }
+    public bool  CsrOn { get; set; }
+    public bool  CsrBreakOn { get; set; }
+    public bool  TrueRngOn { get; set; }
+    public bool  SetSeedOn { get; set; }
+    public uint? Seed { get; set; }
+    public int   MtSleepInterval { get; set; }
 };
 
 public class Program
@@ -358,6 +363,7 @@ public class Program
         Option<bool?> optCsrBreakOn      = new Option<bool?>("--csrbreak", "Enable break for CSR? [Y/N]");
         Option<bool?> optTrueRngOn       = new Option<bool?>("--truerng", "Enable True RNG Mod? [Y/N]");
         Option<bool?> optSetSeedOn       = new Option<bool?>("--setseed", "Enable Set Seed Mod? [Y/N]");
+        Option<uint?> optSeed            = new Option<uint?>("--seed", "Use this seed for the Set Seed Mod.");
         Option<int?>  optMtSleepInterval = new Option<int?>("--mt_sleep_interval", "Specify the main thread sleep interval. [ms]");
 
         RootCommand rootCmd = new RootCommand("Launches the FFX Cutscene Remover.")
@@ -366,10 +372,11 @@ public class Program
             optCsrBreakOn,
             optTrueRngOn,
             optSetSeedOn,
+            optSeed,
             optMtSleepInterval
         };
 
-        rootCmd.SetHandler(MainLoop, new CsrConfigBinder(optCsrOn, optCsrBreakOn, optTrueRngOn, optSetSeedOn, optMtSleepInterval));
+        rootCmd.SetHandler(MainLoop, new CsrConfigBinder(optCsrOn, optCsrBreakOn, optTrueRngOn, optSetSeedOn, optSeed, optMtSleepInterval));
 
         rootCmd.Invoke(args);
         return;
@@ -381,7 +388,7 @@ public class Program
 
         if (csrConfig.SetSeedOn)
         {
-            SetSeed();
+            SetSeed(csrConfig.Seed);
         }
 
         while (true)
@@ -612,18 +619,26 @@ public class Program
         }
     }
 
-    private static void SetSeed()
+    private static void SetSeed(uint? optSeed)
     {
         bool seedEnteredByUser = false;
 
         while (!seedEnteredByUser)
         {
-            Console.WriteLine("Enter Seed ID To Run");
-            string seedString = Console.ReadLine();
-            if (!uint.TryParse(seedString, out seedSubmitted))
+            if (optSeed is uint seed)
             {
-                Console.WriteLine("Seed Contained Non-Numeric Characters. Please Try Again.");
-                continue;
+                seedSubmitted = seed;
+                optSeed = null;
+            }
+            else
+            {
+                Console.WriteLine("Enter Seed ID To Run");
+                string seedString = Console.ReadLine();
+                if (!uint.TryParse(seedString, out seedSubmitted))
+                {
+                    Console.WriteLine("Seed Contained Non-Numeric Characters. Please Try Again.");
+                    continue;
+                }
             }
             if (!PCSeeds.Contains(seedSubmitted))
             {
