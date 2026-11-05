@@ -1,4 +1,6 @@
-﻿namespace FFXCutsceneRemover;
+﻿using FFXCutsceneRemover.Logging;
+
+namespace FFXCutsceneRemover;
 
 class DjoseSkipTransition : Transition
 {
@@ -10,14 +12,20 @@ class DjoseSkipTransition : Transition
         bool precondition = MemoryWatchers.RoomNumber.Current == 93 &&
                             MemoryWatchers.Storyline.Current  == 961;
 
-        if (precondition && MemoryWatchers.NPCLastInteraction.Current == 12 && !skip_failed)
+        if (precondition && MemoryWatchers.NPCLastInteraction.Current == 12 && !skip_initiated)
         {
+            DiagnosticLog.Information("Djose Skip initiated.");
             skip_initiated = true;
+
+            return;
         }
 
-        if (skip_initiated && (MemoryWatchers.AtelCurCtrlWorker.Current & 0x02) == 0x02) // The user regained control before we skipped; failure
+        if (skip_initiated && !skip_failed && (MemoryWatchers.AtelCurCtrlWorker.Current & 0x02) == 0x02) // The user regained control before we skipped; failure
         {
+            DiagnosticLog.Information("Djose Skip failed. You regained control over your character before we skipped.");
             skip_failed = true;
+
+            return;
         }
 
         if (precondition && MemoryWatchers.CutsceneAlt.Current == 1678)
