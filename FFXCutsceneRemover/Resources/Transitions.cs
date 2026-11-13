@@ -20,6 +20,7 @@ static class Transitions
     static readonly BikanelTransition BikanelTransition = new BikanelTransition { ForceLoad = false, Description = "Bikanel Desert", Suspendable = false, Repeatable = true };
     static readonly HomeTransition HomeTransition = new HomeTransition { ForceLoad = false, Description = "Home Fights", Suspendable = false, Repeatable = true };
     static readonly GuardsTransition GuardsTransition = new GuardsTransition { ForceLoad = false, Description = "Guards", Suspendable = false, Repeatable = true };
+    static readonly DjoseSkipTransition DjoseSkipTransition = new DjoseSkipTransition() { Description = "Djose Skip check", Suspendable = false, Repeatable = true };
 
     private static byte[] BlitzballBytes = new byte[]
     {
@@ -651,8 +652,8 @@ static class Transitions
             () => { return MemoryWatchers.RoomNumber.Current == 93 && MemoryWatchers.Storyline.Current == 960; },
             new Transition { RoomNumber = 93, Storyline = 961, SpawnPoint = 0, PositionTidusAfterLoad = true, Target_x = -244.694f, Target_y = -56.461f, Target_z = -810.146f, Target_rot = 1.698f, Target_var1 = 190, Description = "Kimahri speaks"} },
         {
-            () => { return MemoryWatchers.RoomNumber.Current == 93 && MemoryWatchers.Storyline.Current == 961 && MemoryWatchers.CutsceneAlt.Current == 1678; },
-            new Transition { RoomNumber = 76, Storyline = 962, SpawnPoint = 1, Description = "Tidus is eager to go to Zanarkand"} },
+            () => { return MemoryWatchers.RoomNumber.Current == 93 && MemoryWatchers.Storyline.Current == 961; },
+            DjoseSkipTransition },
         {
             () => { return MemoryWatchers.RoomNumber.Current == 76 && MemoryWatchers.Storyline.Current == 962; },
             new Transition { Storyline = 970, SpawnPoint = 0, Description = "Tidus whoa"} },
