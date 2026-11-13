@@ -27,6 +27,7 @@ class DjoseSkipTransition : Transition
             if (Stage == 1)
             {
                 Stage = 3; // Success
+                return;
             }
 
             if (Stage != 3) // Failure, or not attempted
