@@ -27,6 +27,8 @@ class DjoseSkipTransition : Transition
             if (Stage == 1)
             {
                 Stage = 3; // Success
+                WriteValue<short>(MemoryWatchers.Storyline, 1030);
+
                 return;
             }
 
