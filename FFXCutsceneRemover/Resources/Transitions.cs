@@ -687,7 +687,7 @@ static class Transitions
         // END OF DJOSE HIGHROAD
         // START OF MOONFLOW
         {
-            () => { return MemoryWatchers.RoomNumber.Current == 75 && MemoryWatchers.Storyline.Current == 1030; },
+            () => { return MemoryWatchers.RoomNumber.Current == 75 && (MemoryWatchers.Storyline.Current == 1030 || MemoryWatchers.Storyline.Current == 961 /*Successful Djose Skip*/); },
             new Transition { RoomNumber = 75, Storyline = 1032, MoonflowFlag = 1, Description = "Biran and Yenke taunt"} },
         {
             () => { return MemoryWatchers.RoomNumber.Current == 105 && MemoryWatchers.Storyline.Current == 1032 && MemoryWatchers.State.Current == 0; },
