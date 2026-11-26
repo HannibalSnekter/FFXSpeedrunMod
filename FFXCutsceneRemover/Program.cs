@@ -37,21 +37,23 @@ internal sealed class CsrConfigBinder : BinderBase<CsrConfig>
         _optMtSleepInterval = optMtSleepInterval;
     }
 
-    private static bool ResolveMandatoryBoolArg(Option<bool?> opt)
+    private static bool ResolveMandatoryBoolArg(Option<bool?> opt, bool defaultValue)
     {
         Console.WriteLine(opt.Description);
-        return Console.ReadLine()?.ToUpper().StartsWith("Y") ?? false;
+        string input = Console.ReadLine()?.Trim();
+        if (string.IsNullOrEmpty(input)) return defaultValue;
+        return input.ToUpper().StartsWith("Y");
     }
 
     protected override CsrConfig GetBoundValue(BindingContext bindingContext)
     {
         var csr_config = new CsrConfig {};
 
-        csr_config.CsrOn = bindingContext.ParseResult.GetValueForOption(_optCsrOn) ?? ResolveMandatoryBoolArg(_optCsrOn);
-        csr_config.CsrBreakOn = csr_config.CsrOn && (bindingContext.ParseResult.GetValueForOption(_optCsrBreakOn) ?? ResolveMandatoryBoolArg(_optCsrBreakOn));
+        csr_config.CsrOn = bindingContext.ParseResult.GetValueForOption(_optCsrOn) ?? ResolveMandatoryBoolArg(_optCsrOn, true);
+        csr_config.CsrBreakOn = csr_config.CsrOn && (bindingContext.ParseResult.GetValueForOption(_optCsrBreakOn) ?? ResolveMandatoryBoolArg(_optCsrBreakOn, true));
 
-        csr_config.TrueRngOn = bindingContext.ParseResult.GetValueForOption(_optTrueRngOn) ?? ResolveMandatoryBoolArg(_optTrueRngOn);
-        csr_config.SetSeedOn = !csr_config.TrueRngOn && (bindingContext.ParseResult.GetValueForOption(_optSetSeedOn) ?? ResolveMandatoryBoolArg(_optSetSeedOn));
+        csr_config.TrueRngOn = bindingContext.ParseResult.GetValueForOption(_optTrueRngOn) ?? ResolveMandatoryBoolArg(_optTrueRngOn, true);
+        csr_config.SetSeedOn = !csr_config.TrueRngOn && (bindingContext.ParseResult.GetValueForOption(_optSetSeedOn) ?? ResolveMandatoryBoolArg(_optSetSeedOn, true));
         csr_config.Seed = csr_config.SetSeedOn ? bindingContext.ParseResult.GetValueForOption(_optSeed) : null;
 
         csr_config.MtSleepInterval = bindingContext.ParseResult.GetValueForOption(_optMtSleepInterval) ?? 16;
@@ -361,10 +363,10 @@ public class Program
         DiagnosticLog.Information($"Cutscene Remover for Final Fantasy X, version {majorID}.{minorID}.{patchID}");
         if (args.Length > 0) DiagnosticLog.Information($"!!! LAUNCHED WITH COMMAND-LINE OPTIONS: {string.Join(' ', args)} !!!");
 
-        Option<bool?> optCsrOn           = new Option<bool?>("--csr", "Enable Cutscene Remover (CSR) Mod? [Y/N]");
-        Option<bool?> optCsrBreakOn      = new Option<bool?>("--csrbreak", "Enable break for CSR? [Y/N]");
-        Option<bool?> optTrueRngOn       = new Option<bool?>("--truerng", "Enable True RNG Mod? [Y/N]");
-        Option<bool?> optSetSeedOn       = new Option<bool?>("--setseed", "Enable Set Seed Mod? [Y/N]");
+        Option<bool?> optCsrOn           = new Option<bool?>("--csr", "Enable Cutscene Remover (CSR) Mod? [Y/n]");
+        Option<bool?> optCsrBreakOn      = new Option<bool?>("--csrbreak", "Enable break for CSR? [Y/n]");
+        Option<bool?> optTrueRngOn       = new Option<bool?>("--truerng", "Enable True RNG Mod? [Y/n]");
+        Option<bool?> optSetSeedOn       = new Option<bool?>("--setseed", "Enable Set Seed Mod? [Y/n]");
         Option<uint?> optSeed            = new Option<uint?>("--seed", "Use this seed for the Set Seed Mod.");
         Option<int?>  optMtSleepInterval = new Option<int?>("--mt_sleep_interval", "Specify the main thread sleep interval. [ms]");
 
