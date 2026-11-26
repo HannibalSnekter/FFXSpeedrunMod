@@ -8,6 +8,7 @@ using System.CommandLine.Parsing;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace FFXCutsceneRemover;
@@ -344,10 +345,11 @@ public class Program
         3556394350
     };
 
-    // Cutscene Remover Version Number, 0x30 - 0x39 = 0 - 9, 0x48 = decimal point
-    private const int majorID = 1;
-    private const int minorID = 8;
-    private const int patchID = 1;
+    // Version is set in FFXSpeedrunMod.csproj (<Version>)
+    private static readonly Version version = Assembly.GetExecutingAssembly().GetName().Version;
+    private static readonly int majorID = version.Major;
+    private static readonly int minorID = version.Minor;
+    private static readonly int patchID = version.Build;
     private static List<(string, byte)> startGameText;
 
     static Mutex mutex = new Mutex(true, "CSR");
