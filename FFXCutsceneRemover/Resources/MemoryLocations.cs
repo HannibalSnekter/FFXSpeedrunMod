@@ -152,6 +152,7 @@ static class MemoryLocations
 
     public static MemoryLocation YojimboFaythTransition = new MemoryLocation("YojimboFaythTransition", 0xF25BA0 + 0x1C, new int[] { 0x9508 });
 
+    public static MemoryLocation AtelCurCtrlWorker      = new MemoryLocation("AtelCurCtrlWorker", 0xF26B28, 0x0);
     public static MemoryLocation CutsceneProgress_Max   = new MemoryLocation("CutsceneProgress_Max", 0xF26B28, 0xC);
     public static MemoryLocation CutsceneProgress_uVar1 = new MemoryLocation("CutsceneProgress_uVar1", 0xF26B28, 0x14);
     public static MemoryLocation CutsceneProgress_uVar2 = new MemoryLocation("CutsceneProgress_uVar2", 0xF26B28, 0x16);

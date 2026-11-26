@@ -152,6 +152,7 @@ public static class MemoryWatchers
     public static MemoryWatcher<int> AeonTransition;
     public static MemoryWatcher<int> YuYevonTransition;
     public static MemoryWatcher<int> YojimboFaythTransition;
+    public static MemoryWatcher<byte> AtelCurCtrlWorker;
     public static MemoryWatcher<int> CutsceneProgress_Max;
     public static MemoryWatcher<int> CutsceneProgress_uVar1;
     public static MemoryWatcher<int> CutsceneProgress_uVar2;
@@ -467,6 +468,7 @@ public static class MemoryWatchers
         AeonTransition = GetMemoryWatcher<int>(MemoryLocations.AeonTransition);
         YuYevonTransition = GetMemoryWatcher<int>(MemoryLocations.YuYevonTransition);
         YojimboFaythTransition = GetMemoryWatcher<int>(MemoryLocations.YojimboFaythTransition);
+        AtelCurCtrlWorker = GetMemoryWatcher<byte>(MemoryLocations.AtelCurCtrlWorker);
         CutsceneProgress_Max = GetMemoryWatcher<int>(MemoryLocations.CutsceneProgress_Max);
         CutsceneProgress_uVar1 = GetMemoryWatcher<int>(MemoryLocations.CutsceneProgress_uVar1);
         CutsceneProgress_uVar2 = GetMemoryWatcher<int>(MemoryLocations.CutsceneProgress_uVar2);
